@@ -39,7 +39,7 @@
                     <input class="border border-black mb-2 rounded-md" type="password" name="password" placeholder="password">
                     <input class="border border-black rounded-md" type="submit" value="Submit">
                     <?php if(isset($_POST["name"]) && (!$found)){ ?>
-                        <p>Username/password is invalid</p>
+                        <p class="text-red-600">Username/password is invalid</p>
                     <?php } ?>
                 </form>
             </div>
