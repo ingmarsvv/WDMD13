@@ -9,6 +9,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
+<?php
+    $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
+    $result = mysqli_query($db,'SELECT * FROM `articles`');
+    //mysqli_query($db, "INSERT INTO `articles` (`title`, `image_url`, `body`) VALUES ('Generated article', '', '" .date('d.m.Y H:i:s'). "')");
+    mysqli_close($db);
+    //var_dump($obj);
+?>
     <?php include 'header.php'; ?>
     <div class="flex flex-row gap-x-2 mt-10">
         <div class="flex flex-col basis-1/2">
@@ -17,11 +24,9 @@
             <img class="mb-6" src="./images/constr3.jpeg" alt="">
         </div>
         <div class="flex flex-col basis-1/2">
-            <p class="mb-14">"At our company, we pride ourselves on delivering top-quality construction services, specializing in both residential and commercial projects with a commitment to excellence and customer satisfaction."</p>
-            <p class="mb-14">"With over 15 years of experience in the construction industry, our team of skilled professionals is dedicated to turning your vision into reality, ensuring every detail is meticulously handled."</p>
-            <p class="mb-14">"Our comprehensive range of services includes design-build, general contracting, project management, and renovation, making us a one-stop solution for all your construction needs."</p>
-            <p class="mb-14">"We prioritize safety, sustainability, and innovation in every project we undertake, utilizing the latest technologies and eco-friendly practices to create structures that stand the test of time."</p>
-            <p class="mb-14">"Customer satisfaction is at the heart of what we do, and we strive to exceed expectations through transparent communication, on-time delivery, and unparalleled craftsmanship."</p>
+        <?php while($row = mysqli_fetch_assoc($result)){ ?>
+            <p class="mb-14"><?= $row['body'] ?></p>     
+        <?php } ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>

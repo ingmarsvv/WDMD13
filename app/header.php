@@ -1,9 +1,9 @@
-<header class=" bg-slate-200 py-2">
+<header class=" bg-slate-200 py-2 mb-4">
     <div class="flex flex-row justify-between mx-2">
         <div>
             <?php
-                $pages = array("./home.php", "./about.php", "./contacts.php", "./loginpage.php" );
-                $label = array("Home", "About", "Contacts", "Login");
+                $pages = array("./home.php", "./about.php", "./article.php", "./loginpage.php" );
+                $label = array("Home", "About", "Articles", "Login");
                 for($i=0; $i < 4; $i++){ ?>
                     <a class="basis-1/6 bg-amber-100 px-2 rounded" href="<?=$pages[$i]?>"><?=$label[$i]?></a>
                 <?php }
