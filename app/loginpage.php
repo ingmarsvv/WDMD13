@@ -1,22 +1,16 @@
 <?php session_start(); ?>
 <?php 
-    
     $password = !empty($_POST["password"]) ? $_POST["password"] : NULL;
     $username = !empty($_POST["name"]) ? $_POST["name"] : NULL;
 
-    $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
-    $result = mysqli_query($db,'SELECT * FROM `user`');
-    mysqli_close($db);
-    $found = false;
-    while($row = mysqli_fetch_assoc($result)){
-        if (!empty($password) && !empty($username)){
-            if ($row["login"] == $username && $row["password"] == $password){
+    if(isset($_POST["name"])){
+        $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
+        $query= "SELECT * FROM `user` WHERE `login`='$username' AND `password`='$password'";
+        $result = mysqli_query($db, $query);
+        mysqli_close($db);
+            if (mysqli_num_rows($result) > 0){
                 $_SESSION["name"] = $username;
-                $found = true;
-                header("Location: home.php");
-                break;
             }
-        }
     }
 ?>
 <!DOCTYPE html>
@@ -38,9 +32,10 @@
                     <input class="border border-black mb-2 rounded-md" type="text" name="name" placeholder="username">
                     <input class="border border-black mb-2 rounded-md" type="password" name="password" placeholder="password">
                     <input class="border border-black rounded-md" type="submit" value="Submit">
-                    <?php if(isset($_POST["name"]) && (!$found)){ ?>
-                        <p class="text-red-600">Username/password is invalid</p>
-                    <?php } ?>
+                    <?php
+                        if ( isset($result) && mysqli_num_rows($result) == 0){ ?>
+                            <p class="text-red-500">Invalid username/password!</p>
+                        <?php } ?>
                 </form>
             </div>
         </div>
