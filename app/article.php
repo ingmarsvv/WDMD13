@@ -13,8 +13,36 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <?php
-        if(isset($_POST["title"]) && (isset($_SESSION["name"]))){
+        if(isset($_POST["type"]) && ($_POST["type"] === "newArticle")){
             insertArticles($_POST["title"], $_POST["imageurl"], $_POST["body"],);
+        }
+
+        if(isset($_GET["delete"])){
+            $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
+            $id = $_GET["delete"];
+            mysqli_query($db, "DELETE FROM `articles` WHERE `id`= $id");
+        }
+
+        $article = array();
+        if (isset($_GET["edit"])){
+            $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
+            $id = $_GET["edit"];
+            $result = mysqli_query($db,"SELECT * FROM `articles`  WHERE `id`= $id");
+
+            if (mysqli_num_rows($result) > 0){
+                $article = mysqli_fetch_assoc($result);
+            }
+        }
+        
+        if(isset($_POST["type"]) && $_POST["type"] == "editArticle"){
+            $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
+            $id = $_POST['id'];
+            $title = $_POST['title'];
+            $image = $_POST['image_url'];
+            $body = $_POST['contents'];
+            if (!empty($id)){
+                 mysqli_query($db, "UPDATE `articles` SET `title` = '$title', `image_url` = '$image', `body` = '$body' WHERE `id`= $id");
+            }
         }
     ?>
 
@@ -22,21 +50,50 @@
     <?php include 'header.php'; ?>
     <div class="flex flex-col gap-8 flex-grow">
         <?php 
-            $result = getArticles();
-            while($row = mysqli_fetch_assoc($result)){ ?>
-            <div class="flex flex-row justify-center">
-                <div class="basis-1/12 bg-green-100 rounded p-2">
-                    <?= $row["title"]; ?>
-                </div>
-                <div class="basis-3/5 max-w-3xl bg-green-100 rounded p-2">
-                    <?= $row["body"]; ?>
-                </div> 
+            $result = getArticles(); ?>
+            <div class="w-4/5 m-auto">
+                <table class="table-fixed">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Content</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                <?php while($row = mysqli_fetch_assoc($result)){ ?>
+                <tr>
+                    <td class="border border-slate-300 p-1"><?= $row["id"]; ?></td>
+                    <td class="border border-slate-300 p-1"><?= $row["title"]; ?></td>
+                    <td class="border border-slate-300 p-1"><?= $row["body"]; ?></td>
+                    <td class="border border-slate-300 p-1 max-w-28 break-words"><?= $row["image_url"]; ?></td>
+                    <td class="border border-slate-300 p-1"><a href="?edit=<?= $row['id']?>"><button class="mx-auto block border border-black rounded-md w-1/5 min-w-min p-2 bg-lime-200">Edit</button></a></td>
+                    <td class="border border-slate-300 p-1"><a href="?delete=<?= $row['id']?>"><button class="mx-auto block border border-black rounded-md w-1/5 min-w-min p-2 bg-lime-200">Delete</button></a></td>
+                </tr>
+                <?php } ?>
+                </table>
             </div>
-        <?php } ?>
-        <div class="w-3/5 max-w-xl mx-auto bg-slate-300 p-3 text-center text-lg rounded">
+        
+        <h3 class="text-lg text-center">MySQL edit</h3>
+            <form class="mx-auto bg-slate-300 p-3 rounded"  action="./article.php" method="post">
+                <input type="hidden" name="type" value="editArticle">
+                <label for="id">ID</label>
+                <input type="text" name="id" value="<?= $article['id'] ?? '' ?>">
+                <label for="title">Title</label>
+                <input type="text" name="title" value="<?= $article['title'] ?? '' ?>">
+                <label for="image_url">URL</label>
+                <input type="text" name="image_url" value="<?= $article['image_url'] ?? '' ?>">
+                <label class="block" for="contents">Content</label>
+                <textarea class="w-full h-96" name="contents" id=""><?= $article['body'] ?? '' ?></textarea>
+                <input class="mx-auto block border border-black rounded-md w-1/5 min-w-min p-1 bg-lime-200" type="submit" value="Update">
+            </form>
+
+
+        <div class="w-3/5 max-w-xl mx-auto p-3 text-center text-lg rounded">
             Add your article to the database!
         </div>
             <form class="w-3/5 max-w-xl mx-auto bg-slate-300 p-3 rounded" action="./article.php" method="POST">
+                <input type="hidden" name="type" value="newArticle">
                 <label class="block" for="title">Title</label>
                 <input class="border border-black mb-2 rounded-md w-1/2" type="text" name="title">
                 <label class="block" for="body">Body</label>
@@ -52,4 +109,5 @@
     </div>
     <div class="mb-0 ml-0"><?php include 'footer.php'; ?></div>
 </body>
+<?php mysqli_close($db); ?>
 </html>
