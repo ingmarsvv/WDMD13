@@ -13,39 +13,23 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <?php
-        if(isset($_POST["type"]) && ($_POST["type"] === "newArticle")){
-            insertArticles($_POST["title"], $_POST["imageurl"], $_POST["body"],);
+        if(isset($_POST["type"]) && ($_POST["type"] == "newArticle")){
+            insertArticles($_POST);
         }
 
         if(isset($_GET["delete"])){
-            $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
             $id = $_GET["delete"];
-            mysqli_query($db, "DELETE FROM `articles` WHERE `id`= $id");
+            deleteArticle($id);
         }
 
-        $article = array();
         if (isset($_GET["edit"])){
-            $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
-            $id = $_GET["edit"];
-            $result = mysqli_query($db,"SELECT * FROM `articles`  WHERE `id`= $id");
-
-            if (mysqli_num_rows($result) > 0){
-                $article = mysqli_fetch_assoc($result);
-            }
+            $article = editArticle($_GET);
         }
         
-        if(isset($_POST["type"]) && $_POST["type"] == "editArticle"){
-            $db = mysqli_connect('db', 'user', 'secret', 'rcs13-db');
-            $id = $_POST['id'];
-            $title = $_POST['title'];
-            $image = $_POST['image_url'];
-            $body = $_POST['contents'];
-            if (!empty($id)){
-                 mysqli_query($db, "UPDATE `articles` SET `title` = '$title', `image_url` = '$image', `body` = '$body' WHERE `id`= $id");
-            }
+        if(isset($_POST["type"]) && !empty($_POST["id"]) && $_POST["type"] == "updateArticle"){
+            updateArticle($_POST);
         }
     ?>
-
 
     <?php include 'header.php'; ?>
     <div class="flex flex-col gap-8 flex-grow">
@@ -75,8 +59,8 @@
             </div>
         
         <h3 class="text-lg text-center">MySQL edit</h3>
-            <form class="mx-auto bg-slate-300 p-3 rounded"  action="./article.php" method="post">
-                <input type="hidden" name="type" value="editArticle">
+            <form class="mx-auto bg-slate-300 p-3 rounded"  action="./article.php" method="POST">
+                <input type="hidden" name="type" value="updateArticle">
                 <label for="id">ID</label>
                 <input type="text" name="id" value="<?= $article['id'] ?? '' ?>">
                 <label for="title">Title</label>
